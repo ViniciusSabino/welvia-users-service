@@ -1,0 +1,26 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: "jdbc:postgresql://127.0.0.1:5432/financial-targets-db"
+    username: postgres
+    password: G~w<Yq=&fU;93kNLZ
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+server:
+  port: 8083
+  servlet:
+    contextPath: /api
+  info:
+    app:
+      name: financial-targets-users-service
+      version: '0.0.1-SNAPSHOT'
+logging:
+  level:
+    root: INFO
+    com.financialtargets: DEBUG
