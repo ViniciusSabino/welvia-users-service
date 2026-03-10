@@ -1,17 +1,18 @@
 package com.financialtargets.users.infrastructure.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "users")
-public class UsersEntity {
+public class UsersEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,4 +40,53 @@ public class UsersEntity {
 
     @Column(name="enabled", nullable = false)
     private Boolean enabled;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_permission",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "permission_id")})
+    private List<PermissionEntity> permissions;
+
+    public List<String> getRoles() {
+        List<String> roles = new ArrayList<>();
+
+        for (PermissionEntity permission : permissions) {
+            roles.add(permission.getDescription());
+        }
+
+        return roles;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.permissions;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void syncUsername() {
+        this.username = this.email;
+    }
+
+    public UsersEntity () {}
 }

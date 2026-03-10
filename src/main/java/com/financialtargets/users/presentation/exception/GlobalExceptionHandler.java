@@ -1,6 +1,7 @@
 package com.financialtargets.users.presentation.exception;
 
 import com.financialtargets.users.domain.exception.BadRequestException;
+import com.financialtargets.users.domain.exception.InvalidJwtAuthenticationException;
 import com.financialtargets.users.domain.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -84,6 +85,15 @@ public class GlobalExceptionHandler {
         log.warn("Resource Not Found Exception: {}", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationException(InvalidJwtAuthenticationException ex) {
+        ExceptionResponse response = new ExceptionResponse(ex.getMessage());
+
+        log.warn("Invalid Jwt Authentication Exception: {}", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(Exception.class)
